@@ -1,0 +1,167 @@
+/* Borisov Lab · стиль Paper для сайта материалов канала t.me/borisov_lab */
+
+@font-face { font-family: "Oswald"; src: url("fonts/Oswald.woff2") format("woff2"); font-weight: 200 700; font-display: swap; }
+@font-face { font-family: "Golos"; src: url("fonts/Golos.woff2") format("woff2"); font-weight: 400 900; font-display: swap; }
+
+:root {
+  --paper: #F8F0E7;
+  --ink: #1B2843;
+  --ink-soft: #3A4660;
+  --sand: #DECBB2;
+  --slate: #647387;
+  --coral: #CF4E33;
+  --plate: #EFE4D6;
+  --col: 720px;
+  --gutter: 18px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "Golos", system-ui, sans-serif;
+  font-size: 17px;
+  line-height: 1.6;
+}
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--coral); text-decoration: none; }
+a:hover { text-decoration: underline; }
+p { margin: 0 0 1em; }
+strong { font-weight: 650; }
+
+.wrap { max-width: calc(var(--col) + 2 * var(--gutter)); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* шапка и подвал */
+.topbar { border-bottom: 1px solid var(--sand); }
+.topbar .wrap { display: flex; justify-content: space-between; align-items: center; height: 56px; }
+.brand { font-weight: 700; font-size: 13px; letter-spacing: 3px; color: var(--ink); }
+.brand:hover { text-decoration: none; }
+.topbar .tg { font-size: 14px; font-weight: 600; }
+.footer { border-top: 1px solid var(--sand); margin-top: 56px; }
+.footer .wrap { padding-top: 22px; padding-bottom: 40px; display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; align-items: baseline; }
+.footer .brand { color: var(--slate); }
+.footer nav { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 14px; font-weight: 600; }
+
+/* метки и заголовки */
+.label { font-size: 12px; font-weight: 600; letter-spacing: 2.6px; text-transform: uppercase; color: var(--slate); }
+.num { font-family: "Oswald"; font-weight: 600; font-size: 15px; letter-spacing: 2px; color: var(--coral); text-transform: uppercase; }
+h1, h2, h3 { font-family: "Oswald"; font-weight: 700; text-transform: uppercase; color: var(--ink); }
+h1 { font-size: clamp(40px, 11vw, 64px); line-height: 1.02; margin: 18px 0 0; letter-spacing: 0.3px; }
+h1 .accent { color: var(--coral); }
+h2 { font-size: clamp(26px, 6.4vw, 34px); line-height: 1.1; margin: 6px 0 20px; }
+h3 { font-size: 19px; font-weight: 600; letter-spacing: 0.4px; margin: 30px 0 12px; }
+.lead { font-size: 19px; line-height: 1.55; }
+.muted { color: var(--slate); }
+.note { font-size: 14px; color: var(--slate); }
+
+/* обложка материала */
+.hero { padding-top: 34px; }
+.hero .sub { font-size: 19px; line-height: 1.5; margin: 18px 0 0; max-width: 620px; }
+.hero .byline { font-size: 14px; color: var(--slate); margin-top: 14px; }
+.hero .byline b { color: var(--ink); font-weight: 650; }
+.hero .art { margin: 18px calc(-1 * var(--gutter)) 0; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+.btn {
+  display: inline-block; padding: 11px 18px; border: 2px solid var(--coral);
+  font-weight: 650; font-size: 15px; color: var(--coral); background: transparent;
+}
+.btn.solid { background: var(--coral); color: var(--paper); }
+.btn:hover { text-decoration: none; filter: brightness(0.95); }
+
+/* разделы */
+.section { padding-top: 46px; }
+.section + .section { border-top: 1px solid var(--sand); margin-top: 46px; }
+
+/* «коротко» */
+.summary .item { display: grid; grid-template-columns: 38px 1fr; gap: 0 10px; padding: 14px 0; border-top: 1px solid var(--sand); }
+.summary .item:last-child { border-bottom: 1px solid var(--sand); }
+.summary .n { font-family: "Oswald"; font-weight: 700; font-size: 30px; line-height: 1; color: var(--coral); }
+.summary p { margin: 0; }
+
+/* плашки, выноски, цитаты */
+.panel { background: var(--plate); border-left: 5px solid var(--coral); padding: 14px 18px; margin: 0 0 10px; }
+.panel .t { font-family: "Oswald"; font-weight: 600; text-transform: uppercase; font-size: 18px; letter-spacing: 0.3px; margin-bottom: 4px; }
+.panel p { margin: 0; color: var(--ink-soft); }
+.callout { border-left: 5px solid var(--coral); padding: 2px 0 2px 18px; margin: 24px 0; }
+.callout .t { font-family: "Oswald"; font-weight: 600; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; color: var(--coral); margin-bottom: 6px; }
+.callout p:last-child { margin-bottom: 0; }
+blockquote { margin: 26px 0; padding: 2px 0 2px 18px; border-left: 5px solid var(--coral); }
+blockquote p { font-family: "Oswald"; font-weight: 500; font-size: 24px; line-height: 1.25; margin-bottom: 8px; }
+blockquote footer { font-size: 14px; color: var(--slate); }
+
+/* цифры */
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 6px 0 26px; }
+.stat { background: var(--plate); padding: 14px 16px; }
+.stat .v { font-family: "Oswald"; font-weight: 700; font-size: clamp(26px, 7vw, 34px); line-height: 1.05; color: var(--coral); }
+.stat .d { font-size: 14px; line-height: 1.4; color: var(--ink-soft); margin-top: 6px; }
+
+/* таблица сделок: на телефоне карточки */
+.deals { width: 100%; border-collapse: collapse; font-size: 15px; line-height: 1.4; margin: 6px 0 8px; }
+.deals th { text-align: left; font-size: 11px; font-weight: 650; letter-spacing: 1.6px; text-transform: uppercase; color: var(--slate); padding: 0 10px 8px 0; border-bottom: 2px solid var(--ink); }
+.deals td { padding: 10px 10px 10px 0; border-bottom: 1px solid var(--sand); vertical-align: top; }
+.deals .co { font-family: "Oswald"; font-weight: 600; font-size: 17px; text-transform: uppercase; letter-spacing: 0.2px; }
+.deals .co small { display: block; font-family: "Golos"; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: var(--slate); }
+.deals .sum { font-weight: 650; }
+@media (max-width: 640px) {
+  .deals thead { display: none; }
+  .deals, .deals tbody, .deals tr, .deals td { display: block; width: 100%; }
+  .deals tr { padding: 12px 0; border-bottom: 1px solid var(--sand); }
+  .deals td { border: 0; padding: 2px 0; }
+  .deals td[data-label]::before { content: attr(data-label) ": "; color: var(--slate); font-size: 13px; }
+  .deals .co { margin-bottom: 4px; }
+}
+
+/* причины */
+.reason { display: grid; grid-template-columns: 34px 1fr; gap: 0 10px; margin-bottom: 20px; }
+.reason .n { font-family: "Oswald"; font-weight: 700; font-size: 30px; line-height: 1; color: var(--coral); }
+.reason .t { font-family: "Oswald"; font-weight: 600; font-size: 19px; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 4px; }
+.reason p { margin: 0; }
+
+.spot { width: min(420px, 100%); margin: 6px auto 22px; }
+
+ul.check { list-style: none; padding: 0; margin: 10px 0 20px; }
+ul.check li { position: relative; padding: 12px 0 12px 32px; border-top: 1px solid var(--sand); }
+ul.check li:last-child { border-bottom: 1px solid var(--sand); }
+ul.check li::before { content: "»"; position: absolute; left: 0; top: 4px; font-family: "Oswald"; font-weight: 700; font-size: 26px; color: var(--coral); }
+
+.question { font-family: "Oswald"; font-weight: 600; font-size: 24px; line-height: 1.28; color: var(--coral); margin: 26px 0 0; }
+
+dl.gloss { margin: 0; }
+dl.gloss div { padding: 12px 0; border-top: 1px solid var(--sand); }
+dl.gloss div:last-child { border-bottom: 1px solid var(--sand); }
+dl.gloss dt { font-family: "Oswald"; font-weight: 600; font-size: 17px; text-transform: uppercase; letter-spacing: 0.3px; }
+dl.gloss dd { margin: 2px 0 0; }
+@media (min-width: 641px) {
+  dl.gloss div { display: grid; grid-template-columns: 170px 1fr; gap: 0 16px; }
+  dl.gloss dd { margin: 0; }
+}
+
+ol.src { padding-left: 24px; font-size: 14px; line-height: 1.5; color: var(--ink-soft); }
+ol.src li { margin-bottom: 8px; }
+ol.src li::marker { color: var(--coral); font-weight: 650; }
+ol.src a { word-break: break-word; }
+
+/* каталог */
+.intro { padding-top: 40px; }
+.intro h1 { font-size: clamp(38px, 10vw, 58px); }
+.intro p { font-size: 19px; margin-top: 16px; max-width: 620px; }
+.cards { display: grid; gap: 16px; margin-top: 30px; }
+.card { display: grid; background: var(--plate); color: var(--ink); border-left: 5px solid var(--coral); }
+.card:hover { text-decoration: none; filter: brightness(0.98); }
+.card img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; }
+.card .body { padding: 16px 18px 18px; }
+.card .meta { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--slate); }
+.card .title { font-family: "Oswald"; font-weight: 700; font-size: 26px; line-height: 1.1; text-transform: uppercase; margin: 6px 0 8px; }
+.card .desc { margin: 0; color: var(--ink-soft); font-size: 16px; }
+.card .more { display: inline-block; margin-top: 10px; font-weight: 650; color: var(--coral); }
+@media (min-width: 760px) {
+  .card { grid-template-columns: 300px 1fr; }
+  .card img { height: 100%; aspect-ratio: auto; }
+}
+
+@media print {
+  .topbar, .footer, .actions { display: none; }
+  body { font-size: 11pt; }
+}
