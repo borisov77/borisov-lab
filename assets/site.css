@@ -150,7 +150,7 @@ ol.src a { word-break: break-word; }
 .cards { display: grid; gap: 16px; margin-top: 30px; }
 .card { display: grid; background: var(--plate); color: var(--ink); border-left: 5px solid var(--coral); }
 .card:hover { text-decoration: none; filter: brightness(0.98); }
-.card img { width: 100%; aspect-ratio: 1200 / 630; object-fit: cover; }
+.card img { width: 100%; height: auto; object-fit: contain; background: var(--paper); padding: 12px 10px; }
 .card .body { padding: 16px 18px 18px; }
 .card .meta { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--slate); }
 .card .title { font-family: "Oswald"; font-weight: 700; font-size: 26px; line-height: 1.1; text-transform: uppercase; margin: 6px 0 8px; }
@@ -158,7 +158,7 @@ ol.src a { word-break: break-word; }
 .card .more { display: inline-block; margin-top: 10px; font-weight: 650; color: var(--coral); }
 @media (min-width: 760px) {
   .card { grid-template-columns: 300px 1fr; }
-  .card img { height: 100%; aspect-ratio: auto; }
+  .card img { height: 100%; padding: 16px 12px; }
 }
 
 @media print {
