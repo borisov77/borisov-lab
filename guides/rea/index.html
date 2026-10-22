@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Как поставить REA и разобрать первую программу · Borisov Lab</title>
+<meta name="description" content="Пошаговый гайд по REA (Reverse Engineer Anything): Node.js и агент, подключение REA, проверка и первый разбор учебного приложения. Сверено с документацией REA 22 октября 2026.">
+<meta name="author" content="Владимир Борисов, Borisov Lab">
+<link rel="canonical" href="https://borisov77.github.io/borisov-lab/guides/rea/">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Borisov Lab">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Как поставить REA и разобрать первую программу">
+<meta property="og:description" content="Установка Reverse Engineer Anything с нуля и первый разбор на учебном приложении. Команды, промпты для агента, безопасность и право.">
+<meta property="og:url" content="https://borisov77.github.io/borisov-lab/guides/rea/">
+<meta property="og:image" content="https://borisov77.github.io/borisov-lab/guides/rea/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#F8F0E7">
+<link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/site.css">
+</head>
+<body>
+
+<header class="topbar"><div class="wrap">
+  <a class="brand" href="../../">BORISOV LAB</a>
+  <a class="tg" href="https://t.me/borisov_lab">t.me/borisov_lab</a>
+</div></header>
+
+<main class="wrap">
+
+<section class="hero">
+  <div class="label">Гайд · октябрь 2026</div>
+  <h1>Как поставить REA и разобрать первую <span class="accent">программу</span></h1>
+  <p class="sub">REA (Reverse Engineer Anything) даёт ИИ-агенту инструменты, чтобы заглянуть внутрь готовой программы без исходников. Здесь установка с нуля и первый разбор на учебном приложении.</p>
+  <div class="byline"><b>Владимир Борисов</b> · Borisov Lab · сверено с официальной документацией REA 22 октября 2026, версия rea-agents 6.7.0</div>
+  <div class="actions">
+    <a class="btn solid" href="#start">Начать установку</a>
+    <a class="btn" href="https://github.com/morluto/rea">Репозиторий REA</a>
+  </div>
+  <img class="art" src="cover.jpg" width="1500" height="633" alt="Ноутбук подключён кабелем к закрытому ящику, в окошке ящика видны шестерёнки">
+</section>
+
+<section class="section">
+  <div class="num">Коротко</div>
+  <h2>Если нет времени читать всё</h2>
+  <div class="summary">
+    <div class="item"><div class="n">1</div><p>REA бесплатный проект с открытым кодом (лицензия MIT). Он подключает к Claude Code, Codex, Cursor и другим агентам инструменты обратной разработки через MCP.</p></div>
+    <div class="item"><div class="n">2</div><p>Нужны Node.js 22.19+ (или 24.11+, 26+) и ИИ-агент. Для первого разбора больше ничего ставить не нужно.</p></div>
+    <div class="item"><div class="n">3</div><p>Установка одной командой <code>npx rea-agents@latest setup</code>. Она покажет план изменений и спросит разрешения.</p></div>
+    <div class="item"><div class="n">4</div><p>Первый разбор на учебном приложении Notes от авторов REA: агент найдёт, куда уходит экспорт заметок, и покажет файлы и строки.</p></div>
+    <div class="item"><div class="n">5</div><p>Разбирайте свои программы и те, что разрешено исследовать. Разбор идёт на вашем компьютере, но результаты видит модель, на которой работает агент.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="num">00 · Что это</div>
+  <h2>Из чего состоит связка</h2>
+  <p class="lead">REA появился на GitHub в апреле 2026 года и к 22 октября собрал больше 360 тысяч звёзд. Сам по себе он не нейросеть: он соединяет вашего агента с инструментами, которые умеют читать готовые программы.</p>
+  <div class="panel"><div class="t">Агент</div><p>Claude Code, Codex, Cursor, Gemini CLI и другие. Задаёт вопросы, объясняет найденное, пишет код и тесты.</p></div>
+  <div class="panel"><div class="t">REA</div><p>MCP-сервер и навык (skill) для агента. Даёт инструменты разбора и порядок работы: у каждого вывода опора на файл, функцию или вызов.</p></div>
+  <div class="panel"><div class="t">Ghidra, Hopper, IDA</div><p>Движки для глубокого разбора скомпилированных программ (.exe, .app, библиотек). Для JavaScript и .NET они не нужны.</p></div>
+
+  <h3>Что можно разбирать</h3>
+  <dl class="gloss">
+    <div><dt>JavaScript и Electron</dt><dd>Модули, связи, обмен сообщениями между частями приложения. На Electron сделаны многие настольные программы. Ставить ничего не нужно.</dd></div>
+    <div><dt>Сайты</dt><dd>Структура страницы, скрипты, сетевые запросы. Нужен Chrome, Chromium или Edge.</dd></div>
+    <div><dt>.NET</dt><dd>Метаданные и инструкции сборок, только чтение файлов.</dd></div>
+    <div><dt>Android</dt><dd>APK через JADX и JDK 17+, устройство через adb.</dd></div>
+    <div><dt>Нативный код</dt><dd>Псевдокод, ассемблер, строки, вызовы. Нужен Ghidra, Hopper или IDA.</dd></div>
+    <div><dt>Игры</dt><dd>Метаданные Unity IL2CPP, архивы Godot.</dd></div>
+    <div><dt>Прошивки и трафик</dt><dd>Прошивки через Binwalk или Unblob, сетевые дампы через TShark (на Linux), HAR-файлы из браузера.</dd></div>
+  </dl>
+  <p class="note">На выходе псевдокод, ассемблер и связи между модулями. Исходники с прежними именами и комментариями REA не восстанавливает.</p>
+</section>
+
+<section class="section" id="start">
+  <div class="num">01 · Перед началом</div>
+  <h2>Что понадобится</h2>
+  <ul class="check">
+    <li>Компьютер с macOS, Windows или Linux. Работайте на том компьютере, где лежат файлы, которые хотите разобрать.</li>
+    <li>Node.js версии 22.19+, 24.11+ или 26+. npm ставится вместе с ним.</li>
+    <li>ИИ-агент. Ниже пример для Claude Code: нужна подписка Claude или API-аккаунт. Подойдут и Codex (вход через аккаунт ChatGPT), Cursor, Windsurf, VS Code с Copilot.</li>
+    <li>Терминал. macOS: <code>⌘ Пробел</code>, наберите «Терминал», Enter. Windows: меню «Пуск», наберите PowerShell, Enter.</li>
+  </ul>
+  <p class="note">Команды вставляются в терминал. Тексты с пометкой «в чат агента» вставляются в окно разговора с агентом.</p>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">1</div><div>
+  <h2>Проверьте Node.js</h2>
+  <p>Откройте терминал и выполните:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>node -v
+npm -v</pre></div>
+  <p>Видите v22.19 или новее (подходят и v24.11+, v26+)? Переходите к шагу 2. Если версия старше или терминал пишет «command not found», поставьте Node.js 24 LTS.</p>
+  <div class="os">macOS</div>
+  <p>Скачайте установщик Node.js 24 LTS (.pkg) на <a href="https://nodejs.org/">nodejs.org</a> и пройдите шаги. Если пользуетесь Homebrew:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>brew install node</pre></div>
+  <div class="os">Windows</div>
+  <div class="cmd"><div class="k">PowerShell</div><pre>winget install --exact --id OpenJS.NodeJS.LTS</pre></div>
+  <p>Если спросит про условия, нажмите Y. Закройте PowerShell, откройте заново и проверьте <code>node -v</code>.</p>
+  <div class="os">Linux</div>
+  <div class="cmd"><div class="k">Терминал</div><pre>curl -fsSL https://fnm.vercel.app/install | bash</pre></div>
+  <p>Перезапустите терминал и выполните:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>fnm install 24
+fnm use 24
+fnm default 24</pre></div>
+  <p class="note">Пакет nodejs из репозитория дистрибутива часто старше 22.19, проверьте версию.</p>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">2</div><div>
+  <h2>Поставьте агента</h2>
+  <p>Если Claude Code, Codex или Cursor у вас уже есть, пропустите этот шаг.</p>
+  <div class="os">macOS и Linux</div>
+  <div class="cmd"><div class="k">Терминал</div><pre>curl -fsSL https://claude.ai/install.sh | bash</pre></div>
+  <div class="os">Windows</div>
+  <div class="cmd"><div class="k">PowerShell</div><pre>irm https://claude.ai/install.ps1 | iex</pre></div>
+  <p>Перезапустите терминал, создайте рабочую папку и запустите агента в ней:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>mkdir rea-work
+cd rea-work
+claude</pre></div>
+  <p>При первом запуске Claude Code попросит войти в аккаунт. Как поставить Codex, Cursor и других агентов, есть на <a href="https://rea.tools/get-started/">странице установки REA</a>.</p>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">3</div><div>
+  <h2>Подключите REA</h2>
+  <p>Проще всего попросить об этом самого агента. Скопируйте в его чат:</p>
+  <div class="cmd prompt"><div class="k">В чат агента</div><pre>Установи REA и подключи его к этому агенту командой npx rea-agents@latest setup. Покажи мне план установки на одобрение, потом проверь установку.</pre></div>
+  <p>Или запустите установку сами в терминале:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx rea-agents@latest setup</pre></div>
+  <p>Что произойдёт дальше:</p>
+  <ul class="check">
+    <li>npm спросит разрешения скачать пакет: введите <code>y</code> и нажмите Enter.</li>
+    <li>REA покажет список агентов. Стрелками выберите свой, пробелом отметьте, Enter для продолжения.</li>
+    <li>Появится план: какие файлы настроек изменятся и куда встанет навык. REA сохраняет резервные копии и ничего не меняет без вашего согласия.</li>
+    <li>Установку Hopper для первого раза можно пропустить.</li>
+  </ul>
+  <p>Агента можно указать сразу:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx rea-agents@latest setup --client claude_code</pre></div>
+  <p class="note">Другие ID: codex, cursor, gemini_cli, windsurf, vscode, claude_desktop.</p>
+  <div class="callout">
+    <div class="t">Обязательно перезапустите агента</div>
+    <p>Claude Code, Codex, Gemini CLI: выйдите из сессии и запустите снова. Cursor, Claude Desktop, VS Code: закройте приложение полностью (на Mac <code>⌘ Q</code>), закрытого окна мало.</p>
+  </div>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">4</div><div>
+  <h2>Проверьте подключение</h2>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx -y rea-agents@latest doctor --client claude_code --json</pre></div>
+  <p>В ответе должно быть <code>"healthy": true</code>. Для другого агента подставьте его ID вместо claude_code. Потом спросите самого агента:</p>
+  <div class="cmd prompt"><div class="k">В чат агента</div><pre>Проверь, что REA подключён, и покажи, какими инструментами REA ты можешь пользоваться.</pre></div>
+  <p>Агент не видит инструменты? Перезапустите его ещё раз. Если не помогло, повторите установку для своего агента командой <code>setup --client</code> и снова перезапустите.</p>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">5</div><div>
+  <h2>Первый разбор на учебном примере</h2>
+  <p>У авторов REA есть учебное приложение Notes: шесть файлов на Electron и кнопка Export notes. Агент разберёт его код, ничего не устанавливая и не запуская.</p>
+  <div class="cmd prompt"><div class="k">В чат агента</div><pre>Скачай https://rea.tools/examples/notes-example.zip в новую папку example и распакуй. С помощью REA выясни, что происходит, когда я нажимаю Export notes. Покажи, куда записывается notes.csv, какие в нём поля, и нужные файлы и строки.</pre></div>
+  <p>Если агент не может скачать файл, скачайте <a href="https://rea.tools/examples/notes-example.zip">архив</a> сами, распакуйте и дайте агенту полный путь к папке notes-example с тем же вопросом.</p>
+
+  <h3>Что должно получиться</h3>
+  <p>Короткое объяснение со ссылками на файлы и строки: кнопка отправляет сообщение <code>notes:export</code>, главный процесс приложения превращает заметки в CSV и записывает notes.csv в папку «Загрузки». Колонки: id и title.</p>
+  <div class="panel"><div class="t">renderer.js · страница</div><p>Кнопка Export notes вызывает notes.exportCsv().</p></div>
+  <div class="panel"><div class="t">preload.js · мост</div><p>Отправляет сообщение notes:export главному процессу.</p></div>
+  <div class="panel"><div class="t">main.js · обработчик</div><p>Вызывает форматтер из csv.js и записывает notes.csv.</p></div>
+  <p>Если агент не показал строки кода, попросите его об этом отдельно.</p>
+
+  <h3>Проверьте агента на прогнозе</h3>
+  <p>Хороший разбор проверяется делом. В CSV колонки разделяются запятой. Что будет, если в заголовке заметки есть запятая и кавычки?</p>
+  <div class="cmd prompt"><div class="k">В чат агента</div><pre>Предскажи, как будет выглядеть CSV для заметки с id 1 и заголовком Hello, "REA". Потом запусти форматтер toCsv из примера через Node.js и покажи прогноз и фактический результат.</pre></div>
+  <p>Правильный результат:</p>
+  <div class="cmd"><div class="k">Вывод</div><pre>id,title
+1,"Hello, ""REA"""</pre></div>
+  <p>Заголовок остаётся в одном поле в кавычках, каждая кавычка внутри удваивается. Следующий вопрос можно задать в том же чате: «Что будет, если файл не удастся записать? Проследи ошибку до страницы».</p>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="step"><div class="n">6</div><div>
+  <h2>Ваша первая настоящая задача</h2>
+  <p>Когда учебный пример прошёл, берите свою программу и один конкретный вопрос: одна кнопка, один файл, одно поведение. Шаблон:</p>
+  <div class="cmd prompt"><div class="k">В чат агента</div><pre>Используй REA, чтобы разобраться, как в программе /полный/путь/к/программе устроена функция [название].
+
+Сначала определи тип программы и подходящий способ разбора. Не запускай программу без моего подтверждения.
+
+Раздели ответ на три части: что подтверждено, что предположение, что выяснить не удалось. Для каждого вывода укажи опору: файл, функцию, вызов или наблюдение.
+
+Потом опиши механизм простыми словами и предложи, как сделать похожую функцию в моём проекте, с тестами.</pre></div>
+
+  <h3>Где взять файлы программы</h3>
+  <p>Код Electron-приложения обычно лежит в файле app.asar.</p>
+  <ul class="check">
+    <li>macOS: в Finder откройте «Программы», правый клик по приложению, «Показать содержимое пакета», дальше Contents → Resources.</li>
+    <li>Windows: в папке, куда установлена программа, подпапка resources.</li>
+    <li>Полный путь к файлу или папке проще всего получить, перетащив её в окно терминала. В Windows ещё работает правый клик → «Копировать как путь» (в Windows 10 с зажатым Shift).</li>
+  </ul>
+
+  <h3>Без агента, из терминала</h3>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx -y rea-agents@latest analyze-javascript-application /полный/путь/к/app.asar --json</pre></div>
+  <p>Команда принимает папку распакованного приложения или файл ASAR и возвращает модули, импорты и связи частей Electron с подтверждениями.</p>
+  </div></div>
+</section>
+
+<section class="section">
+  <div class="num">02 · Второй уровень</div>
+  <h2>Скомпилированные программы</h2>
+  <p>Для .exe, .app и библиотек REA нужен движок разбора. Ставится он на тот компьютер, где работает REA.</p>
+  <div class="panel"><div class="t">Ghidra · бесплатный</div><p>Нужны 64-битный JDK 21+ и Ghidra 12.1.4. macOS и Linux (x64 и arm64), на Windows x64 поддержка экспериментальная. На Mac при установке с нуля нужно собрать нативный декомпилятор (понадобятся Xcode Command Line Tools).</p></div>
+  <div class="panel"><div class="t">Hopper · коммерческий</div><p>macOS 12+ и Linux, у демо-версии ограничения производителя. Установщик REA может поставить Hopper сам, после вашего согласия.</p></div>
+  <div class="panel"><div class="t">IDA · коммерческий</div><p>Подключается к уже установленной IDA по отдельной инструкции.</p></div>
+  <p>Проверить, что движок виден REA:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx -y rea-agents@latest doctor --provider ghidra --json</pre></div>
+  <p>Пути к Ghidra и Java, сборка декомпилятора и настройка IDA подробно описаны на <a href="https://rea.tools/get-started/">странице установки REA</a>. Лицензии на коммерческие движки нужны законные: REA лицензий не выдаёт. Взломанные копии авторы прямо запрещают.</p>
+</section>
+
+<section class="section">
+  <div class="num">03 · Безопасность и право</div>
+  <h2>Что важно знать заранее</h2>
+  <div class="callout">
+    <div class="t">Что уходит в облако</div>
+    <p>REA разбирает файлы на вашем компьютере, но результаты получает агент. Если агент работает на облачной модели, найденные строки и фрагменты кода видит её провайдер. Закрытый код и данные клиентов без согласования не разбирайте.</p>
+  </div>
+  <div class="callout">
+    <div class="t">Чтение и запуск</div>
+    <p>Статический разбор только читает файлы. Некоторые режимы запускают программу с правами вашего пользователя. Просите агента не запускать исследуемую программу без подтверждения: эта строка уже есть в шаблоне выше.</p>
+  </div>
+  <div class="callout">
+    <div class="t">Только официальные источники</div>
+    <p>Ставьте REA из <a href="https://github.com/morluto/rea">github.com/morluto/rea</a>, с <a href="https://rea.tools/">rea.tools</a> или из npm-пакета rea-agents. Авторы предупреждают: похожее название репозитория или скопированный README ничего не гарантируют.</p>
+  </div>
+  <div class="callout">
+    <div class="t">Что можно по закону</div>
+    <p>Авторы REA называют законные цели: обучение, совместимость, сохранение старых программ, разбор своего софта или того, что вам разрешили исследовать.</p>
+    <p>В России действует статья 1280 ГК РФ. Законный владелец копии программы может изучать её работу, чтобы понять заложенные идеи и принципы. Декомпилировать можно только ради совместимости со своей программой, и полученное нельзя использовать, чтобы сделать существенно схожую программу.</p>
+    <p>Лицензионное соглашение программы может добавлять ограничения. Для коммерческих задач сверьтесь с юристом.</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="num">04 · Обслуживание</div>
+  <h2>Обновить и удалить</h2>
+  <p>REA обновляется часто, в новых версиях много исправлений. Если ставили через npx, повторите установку и перезапустите агента:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx rea-agents@latest setup</pre></div>
+  <p>Если ставили командой <code>npm install --global rea-agents</code>:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>rea update</pre></div>
+  <p>Убрать REA из настроек агентов вместе с его навыком:</p>
+  <div class="cmd"><div class="k">Терминал</div><pre>npx -y rea-agents@latest uninstall</pre></div>
+  <p class="note">Node.js, Hopper, ваши файлы и другие MCP-серверы останутся на месте.</p>
+
+  <h3>Если что-то не так</h3>
+  <ul class="check">
+    <li>Агент не видит инструменты REA: перезапустите его полностью и проверьте командой doctor из шага 4.</li>
+    <li>PowerShell пишет «running scripts is disabled on this system»: используйте <code>npx.cmd</code> и <code>npm.cmd</code> вместо npx и npm.</li>
+    <li>macOS просит разрешение на автоматизацию (бывает с Hopper): Системные настройки → Конфиденциальность и безопасность → Автоматизация, разрешите приложению, из которого запускаете REA.</li>
+    <li>Ошибка повторяется: обновите REA, перезапустите агента и повторите задачу. Не помогло: создайте <a href="https://github.com/morluto/rea/issues">issue в репозитории</a> с версией REA, системой и текстом ошибки.</li>
+  </ul>
+</section>
+
+<section class="section">
+  <div class="num">Дальше</div>
+  <h2>Что разберём вместе</h2>
+  <p>С ИИ уже разбирают кондиционеры, старые пульты и игры 90-х. Порог входа сейчас: Node.js, агент и одна команда.</p>
+  <p class="question">Какую программу или устройство вы бы разобрали первым? Пишите в комментариях к посту в канале, самые интересные идеи попробуем и покажем результат.</p>
+  <div class="actions">
+    <a class="btn solid" href="https://t.me/borisov_lab">Обсудить в канале</a>
+    <a class="btn" href="https://github.com/morluto/rea">Репозиторий REA</a>
+  </div>
+</section>
+
+<section class="section">
+  <div class="num">Как проверяли</div>
+  <h2>Источники</h2>
+  <p>Команды и шаги сверены 22 октября 2026 года с README репозитория morluto/rea, страницами rea.tools и документацией по установке. Версия rea-agents на эту дату 6.7.0 (вышла 18 октября 2026).</p>
+  <p>REA меняется быстро: если команда не сработала, сверьтесь со страницей установки на rea.tools. Нашли неточность? Напишите в комментариях к посту, поправим.</p>
+  <ol class="src">
+    <li>REA, README репозитория: <a href="https://github.com/morluto/rea">github.com/morluto/rea</a></li>
+    <li>REA, установка: <a href="https://rea.tools/get-started/">rea.tools/get-started</a></li>
+    <li>REA, первый разбор (Notes): <a href="https://rea.tools/first-investigation/">rea.tools/first-investigation</a></li>
+    <li>REA, вопросы и ответы: <a href="https://rea.tools/faq/">rea.tools/faq</a></li>
+    <li>REA, установка, обновление и удаление: <a href="https://github.com/morluto/rea/blob/main/docs/installation.md">docs/installation.md</a></li>
+    <li>REA, условия ответственного использования: <a href="https://github.com/morluto/rea/blob/main/DISCLAIMER.md">DISCLAIMER.md</a></li>
+    <li>npm-пакет rea-agents: <a href="https://www.npmjs.com/package/rea-agents">npmjs.com/package/rea-agents</a></li>
+    <li>Гражданский кодекс РФ, статья 1280 «Право пользователя программы для ЭВМ и базы данных»: <a href="https://legalacts.ru/kodeks/GK-RF-chast-4/razdel-vii/glava-70/statja-1280/">legalacts.ru</a></li>
+  </ol>
+</section>
+
+</main>
+
+<footer class="footer"><div class="wrap">
+  <a class="brand" href="../../">BORISOV LAB</a>
+  <nav><a href="../../">Все материалы</a><a href="https://t.me/borisov_lab">t.me/borisov_lab</a><a href="https://borisovlab.com">borisovlab.com</a></nav>
+</div></footer>
+
+<script>
+document.querySelectorAll(".cmd").forEach(function (box) {
+  var pre = box.querySelector("pre");
+  if (!pre || !navigator.clipboard) return;
+  var b = document.createElement("button");
+  b.className = "copy"; b.type = "button"; b.textContent = "Копировать";
+  b.addEventListener("click", function () {
+    navigator.clipboard.writeText(pre.innerText.replace(/ /g, " ")).then(function () {
+      b.textContent = "Скопировано";
+      setTimeout(function () { b.textContent = "Копировать"; }, 1600);
+    });
+  });
+  box.appendChild(b);
+});
+</script>
+
+</body>
+</html>

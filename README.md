@@ -6,6 +6,7 @@
 
 ## Материалы
 
+- [Как поставить REA и разобрать первую программу](https://borisov77.github.io/borisov-lab/guides/rea/) · гайд, 22.10.2026
 - [AI roll-up: фонды покупают бизнес](https://borisov77.github.io/borisov-lab/research/ai-roll-up/) · исследование, 21.10.2026
 
 ## Устройство

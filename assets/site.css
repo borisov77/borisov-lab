@@ -143,6 +143,25 @@ ol.src li { margin-bottom: 8px; }
 ol.src li::marker { color: var(--coral); font-weight: 650; }
 ol.src a { word-break: break-word; }
 
+/* гайды: команды, промпты, шаги */
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.9em; background: var(--plate); padding: 1px 5px; }
+.cmd { position: relative; margin: 8px 0 18px; }
+.cmd .k { font-size: 11px; font-weight: 650; letter-spacing: 1.6px; text-transform: uppercase; color: var(--slate); margin-bottom: 4px; }
+.cmd pre {
+  margin: 0; padding: 14px 16px; background: var(--ink); color: var(--paper); border-left: 5px solid var(--coral);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 14px; line-height: 1.55;
+  white-space: pre-wrap; word-break: break-word;
+}
+.cmd.prompt pre { background: var(--plate); color: var(--ink); font-family: "Golos", system-ui, sans-serif; font-size: 16px; }
+.cmd .copy {
+  position: absolute; right: 0; top: -4px; padding: 3px 10px; border: 1.5px solid var(--coral); background: var(--paper);
+  color: var(--coral); font: 600 12px/1.4 "Golos", system-ui, sans-serif; cursor: pointer;
+}
+.step { display: grid; grid-template-columns: 44px 1fr; gap: 0 8px; }
+.step .n { font-family: "Oswald"; font-weight: 700; font-size: 40px; line-height: 1; color: var(--coral); }
+.step h2 { margin-top: 0; }
+.os { font-family: "Oswald"; font-weight: 600; font-size: 16px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink); margin: 18px 0 6px; }
+
 /* каталог */
 .intro { padding-top: 40px; }
 .intro h1 { font-size: clamp(38px, 10vw, 58px); }
